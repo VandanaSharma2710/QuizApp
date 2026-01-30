@@ -21,7 +21,7 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @NotBlank
     @Column(nullable = false)
@@ -33,7 +33,7 @@ public class User {
     private String email;
 
     @NotBlank
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String password;
 
     private String provider; //Google/GitHub for OAuth

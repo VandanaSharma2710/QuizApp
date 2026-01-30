@@ -12,7 +12,7 @@ public class Answer {
 
     @Id
     @GeneratedValue( strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     private String option_answer ;
     private boolean isCorrect;
 

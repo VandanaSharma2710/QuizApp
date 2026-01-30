@@ -3,11 +3,11 @@ CREATE TABLE users (
     id BIGSERIAL PRIMARY KEY,
     username VARCHAR(100) NOT NULL,
     email VARCHAR(150) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    provider VARCHAR(50),
+    password VARCHAR(255),
+    provider VARCHAR(50), --OAuth Provider
     is_active BOOLEAN NOT NULL,
     role VARCHAR(20) NOT NULL
-        CHECK (role IN ('PLAYER', 'GAMEMASTER'))
+        CHECK (role IN ('ROLE_PLAYER', 'ROLE_GAMEMASTER'))
 );
 
 CREATE TABLE quizzes (

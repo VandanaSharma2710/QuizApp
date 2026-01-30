@@ -1,6 +1,6 @@
 package com.Natlav.QuizApp.enums;
 
 public enum RoleType {
-    PLAYER,
-    GAMEMASTER
+    ROLE_PLAYER,
+    ROLE_GAMEMASTER
 }
