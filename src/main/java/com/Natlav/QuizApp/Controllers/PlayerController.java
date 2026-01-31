@@ -9,6 +9,8 @@ import com.Natlav.QuizApp.entities.Question;
 import com.Natlav.QuizApp.entities.Quiz;
 import com.Natlav.QuizApp.entities.Result;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,6 +25,16 @@ public class PlayerController {
     private final QuestionService questionService;
     private final AnswerService answerService;
     private final ResultService resultService;
+
+    @GetMapping("/home")
+    public String home(Authentication authentication) {
+        OAuth2User oauthUser = (OAuth2User) authentication.getPrincipal();
+
+        String name = oauthUser.getAttribute("name");
+
+        return "Welcome " + name + " 🎉 login successfully";
+
+    }
 
     @GetMapping("/quizzes")
     public List<Quiz> getAllQuizzes(){
