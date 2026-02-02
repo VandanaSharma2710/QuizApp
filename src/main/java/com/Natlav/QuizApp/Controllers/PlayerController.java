@@ -5,8 +5,6 @@ import com.Natlav.QuizApp.services.Implement.AnswerService;
 import com.Natlav.QuizApp.services.Implement.QuestionService;
 import com.Natlav.QuizApp.services.Implement.QuizService;
 import com.Natlav.QuizApp.services.Implement.ResultService;
-import com.Natlav.QuizApp.entities.Answer;
-import com.Natlav.QuizApp.entities.Question;
 import com.Natlav.QuizApp.entities.Quiz;
 import com.Natlav.QuizApp.entities.Result;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +21,6 @@ import java.util.Map;
 public class PlayerController {
 
     private final QuizService quizService;
-    private final QuestionService questionService;
-    private final AnswerService answerService;
     private final ResultService resultService;
 
     @GetMapping("/home")
