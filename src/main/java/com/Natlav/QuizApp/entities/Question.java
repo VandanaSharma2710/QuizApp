@@ -31,6 +31,6 @@ public class Question {
     private Quiz quiz;
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Answer> answers = new ArrayList<Answer>();
+    private List<Answer> answers = new ArrayList<>();
 
 }

@@ -1,8 +1,6 @@
 package com.Natlav.QuizApp.Controllers;
 
 import com.Natlav.QuizApp.dto.QuizResponse;
-import com.Natlav.QuizApp.services.Implement.AnswerService;
-import com.Natlav.QuizApp.services.Implement.QuestionService;
 import com.Natlav.QuizApp.services.Implement.QuizService;
 import com.Natlav.QuizApp.services.Implement.ResultService;
 import com.Natlav.QuizApp.entities.Quiz;

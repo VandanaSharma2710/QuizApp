@@ -16,7 +16,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 public class SecurityConfig {
 
     private final CustomOAuth2UserService customOAuth2UserService;
-    private final RoleFilter roleFilter;
+
 
     @Autowired
     private CorsConfigurationSource corsConfigurationSource;
