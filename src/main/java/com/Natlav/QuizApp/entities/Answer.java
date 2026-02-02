@@ -1,5 +1,6 @@
 package com.Natlav.QuizApp.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,5 +19,6 @@ public class Answer {
 
     @ManyToOne
     @JoinColumn(name="question_id")
+    @JsonIgnore
     private Question question;
 }

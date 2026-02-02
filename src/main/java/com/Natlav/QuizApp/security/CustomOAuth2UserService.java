@@ -11,6 +11,8 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.List;
 
@@ -25,8 +27,17 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         OAuth2User auth2User = super.loadUser(userRequest);
         System.out.println("GOOGLE ATTRIBUTES: " + auth2User.getAttributes());
 
+        System.out.println("OAUTH PARAMS: " + userRequest.getAdditionalParameters());
         String email = auth2User.getAttribute("email");
         String name = auth2User.getAttribute("name");
+
+        ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+        String selectedRole = (String) attr.getRequest().getSession().getAttribute("ROLE");
+        System.out.println(selectedRole);
+        RoleType roleType = "GAMEMASTER".equals(selectedRole)
+                ? RoleType.ROLE_GAMEMASTER
+                : RoleType.ROLE_PLAYER;
+
 
         if (email == null) {
             throw new OAuth2AuthenticationException("Email not found from Google");
@@ -37,7 +48,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             newUser.setActive(true);
             newUser.setUsername(name);
             newUser.setEmail(email);
-            newUser.setRole(RoleType.ROLE_PLAYER);
+            newUser.setRole(roleType);
             newUser.setProvider("google");
             return  usersRepository.save(newUser);
         });

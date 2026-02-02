@@ -1,5 +1,6 @@
 package com.Natlav.QuizApp.Controllers;
 
+import com.Natlav.QuizApp.dto.QuizResponse;
 import com.Natlav.QuizApp.services.Implement.AnswerService;
 import com.Natlav.QuizApp.services.Implement.QuestionService;
 import com.Natlav.QuizApp.services.Implement.QuizService;
@@ -41,14 +42,9 @@ public class PlayerController {
         return quizService.getAllQuizzes();
     }
 
-    @GetMapping("/quizzes/{quizId}/questions")
-    public List<Question> getQuestions(@PathVariable Long quizId){
-        return  questionService.getQuestionsByQuiz(quizId);
-    }
-
-    @GetMapping("/questions/{questionId}/answers")
-    public List<Answer> getAnswers(@PathVariable Long questionId){
-      return answerService.getAnswersByQuestion(questionId);
+    @GetMapping("quizzes/{quizId}")
+    public QuizResponse getQuizById(@PathVariable Long quizId){
+        return quizService.getQuizById(quizId);
     }
 
     @PostMapping("/submit")

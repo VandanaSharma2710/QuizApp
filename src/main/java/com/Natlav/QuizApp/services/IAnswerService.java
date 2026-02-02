@@ -7,7 +7,9 @@ import java.util.List;
 public interface IAnswerService {
     Answer addAnswer(Long questionId, Answer answer);
 
-    List<Answer> getAnswersByQuestion(Long questionId);
-
     Answer getCorrectAnswer(Long questionId);
+
+    Answer updateAnswer(Long answerId, Answer answer);
+
+    void deleteAnswer(Long answerId);
 }

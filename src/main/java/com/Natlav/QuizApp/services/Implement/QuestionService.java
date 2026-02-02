@@ -27,12 +27,7 @@ public class QuestionService implements IQuestionService {
 
     }
 
-    @Override
-    public List<Question> getQuestionsByQuiz(Long quizId) {
 
-        return _questionRepository.findByQuizId(quizId);
-
-    }
 
     @Override
     public Question updateQuestions(Long questionId, Question question) {

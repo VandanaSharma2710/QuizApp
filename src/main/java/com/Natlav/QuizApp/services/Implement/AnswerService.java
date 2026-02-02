@@ -8,6 +8,7 @@ import com.Natlav.QuizApp.repositories.QuestionsRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -25,15 +26,27 @@ public class AnswerService implements IAnswerService {
 
     }
 
-    @Override
-    public List<Answer> getAnswersByQuestion(Long questionId) {
-
-        return answersRepository.findByQuestionId(questionId);
-
-    }
 
     @Override
     public Answer getCorrectAnswer(Long questionId) {
         return answersRepository.findByQuestionIdAndIsCorrectTrue(questionId).orElseThrow(()-> new EntityNotFoundException("Correct answer not found"));
+    }
+
+    @Transactional
+    @Override
+    public Answer updateAnswer(Long answerId, Answer updatedAnswer) {
+        Answer existAnswer = answersRepository.findById(answerId).orElseThrow(()-> new EntityNotFoundException("answer doesn't exist"));
+        if(updatedAnswer.isCorrect()){
+             answersRepository.clearCorrectAnswerForQuestion(existAnswer.getQuestion().getId());
+        }
+        existAnswer.setOption_answer(updatedAnswer.getOption_answer());
+        existAnswer.setCorrect(updatedAnswer.isCorrect());
+        return answersRepository.save(existAnswer);
+    }
+
+    @Override
+    public void deleteAnswer(Long answerId) {
+        Answer existAnswer = answersRepository.findById(answerId).orElseThrow(()-> new EntityNotFoundException("answer doesn't exist"));
+        answersRepository.delete(existAnswer);
     }
 }
