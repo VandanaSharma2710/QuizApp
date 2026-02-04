@@ -1,6 +1,8 @@
 package com.Natlav.QuizApp.Controllers;
 
 import com.Natlav.QuizApp.dto.QuizResponse;
+import com.Natlav.QuizApp.entities.User;
+import com.Natlav.QuizApp.security.SecurityUtil;
 import com.Natlav.QuizApp.services.Implement.AnswerService;
 import com.Natlav.QuizApp.services.Implement.QuestionService;
 import com.Natlav.QuizApp.services.Implement.QuizService;
@@ -8,9 +10,13 @@ import com.Natlav.QuizApp.entities.Answer;
 import com.Natlav.QuizApp.entities.Question;
 import com.Natlav.QuizApp.entities.Quiz;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static org.springframework.data.jpa.domain.AbstractAuditable_.createdBy;
 
 @RestController
 @RequestMapping("/api/master")
@@ -20,15 +26,20 @@ public class GameMasterController {
     private final QuizService quizService;
     private final QuestionService questionService;
     private final AnswerService answerService;
+    private final SecurityUtil securityUtil;
 
     @GetMapping("/quizzes")
-    public List<Quiz> getAllQuizzesForAdmin(){
-        return quizService.getAllQuizzes();
+    public List<QuizResponse> getAllQuizzesForAdmin(){
+        return quizService.getAllQuizzes().stream().map(quizService::MapToQuizResponse).toList();
     }
 
     @PostMapping("/quizzes")
-    public Quiz createQuiz(@RequestBody Quiz quiz, @RequestParam Long createdBy){
-        return quizService.createQuiz(quiz, createdBy);
+    @PreAuthorize("hasRole('GAMEMASTER')")
+    public QuizResponse createQuiz(@RequestBody Quiz quiz, Authentication authentication){
+        User user = securityUtil.getCurrentUser(authentication);
+        Quiz savedQuiz = quizService.createQuiz(quiz, user);
+        return  quizService.MapToQuizResponse(savedQuiz);
+
     }
 
 
@@ -61,7 +72,7 @@ public class GameMasterController {
     }
 
 
-    @GetMapping("question/{questionId}/correct-answer")
+    @GetMapping("/question/{questionId}/correct-answer")
     public Answer getCorrectAnswer(@PathVariable Long questionId){
         return answerService.getCorrectAnswer(questionId);
     }
@@ -82,7 +93,7 @@ public class GameMasterController {
     }
 
 
-    @GetMapping("quizzes/{quizId}")
+    @GetMapping("/quizzes/{quizId}")
     public QuizResponse getQuizById(@PathVariable Long quizId){
         return quizService.getQuizById(quizId);
     }

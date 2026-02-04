@@ -1,0 +1,5 @@
+ALTER TABLE questions
+ALTER COLUMN quiz_id SET NOT NULL;
+
+ALTER TABLE answers
+ALTER COLUMN question_id SET NOT NULL;

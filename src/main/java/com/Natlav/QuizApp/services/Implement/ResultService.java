@@ -22,10 +22,7 @@ public class ResultService implements IResultService {
     private final ResultsRepository resultsRepository;
 
     @Override
-    public Result submitQuiz(Long userId, Long quizId, Map<Long, Long> answers) {
-
-        User user = usersRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+    public Result submitQuiz(Long quizId, Map<Long, Long> answers, User user) {
 
         Quiz quiz = quizzesRepository.findById(quizId)
                 .orElseThrow(() -> new EntityNotFoundException("Quiz not found"));

@@ -3,26 +3,45 @@ package com.Natlav.QuizApp.services.Implement;
 import com.Natlav.QuizApp.dto.AnswerResponse;
 import com.Natlav.QuizApp.dto.QuestionResponse;
 import com.Natlav.QuizApp.dto.QuizResponse;
+import com.Natlav.QuizApp.entities.Answer;
+import com.Natlav.QuizApp.entities.Question;
 import com.Natlav.QuizApp.services.IQuizService;
 import com.Natlav.QuizApp.entities.Quiz;
 import com.Natlav.QuizApp.entities.User;
 import com.Natlav.QuizApp.repositories.QuizzesRepository;
-import com.Natlav.QuizApp.repositories.UsersRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class QuizService implements IQuizService {
 
     private final QuizzesRepository _quizRepository;
-    private final UsersRepository _userRepository;
-    @Override
-    public Quiz createQuiz(Quiz quiz, Long createdBy) {
 
-        User user = _userRepository.findById(createdBy).orElseThrow(() -> new EntityNotFoundException("this user doesn't exist"));
+
+
+    @Override
+    public Quiz createQuiz(Quiz quiz, User user) {
+        boolean exists = _quizRepository.existsByTitleAndCreatedBy(quiz.getTitle(), user);
+        if(exists) {
+            throw new RuntimeException("Quiz already exists");
+        }
+
+        for(Question question:quiz.getQuestions()){
+            question.setQuiz(quiz);
+            if(question.getAnswers().stream().filter(Answer::isCorrect).count() != 1){
+                throw new RuntimeException("Question must have exactly one correct answer");
+            }
+            for(Answer answer: question.getAnswers()){
+                answer.setQuestion(question);
+            }
+        }
+
+
         quiz.setCreatedBy(user);
         return _quizRepository.save(quiz);
     }
@@ -40,12 +59,38 @@ public class QuizService implements IQuizService {
     }
 
     @Override
-    public Quiz updateQuiz(Long quizId, Quiz quiz) {
-        Quiz existingQuiz =  _quizRepository.findById(quizId).orElseThrow(()-> new EntityNotFoundException("Quiz doesn't exists"));
-         existingQuiz.setTitle(quiz.getTitle());
-         existingQuiz.setDescription(quiz.getDescription());
-         return _quizRepository.save(existingQuiz);
+    @Transactional
+    public Quiz updateQuiz(Long quizId, Quiz updatedQuiz) {
+
+        Quiz existingQuiz = _quizRepository.findById(quizId)
+                .orElseThrow(() -> new EntityNotFoundException("Quiz not found"));
+
+        existingQuiz.setTitle(updatedQuiz.getTitle());
+        existingQuiz.setDescription(updatedQuiz.getDescription());
+
+
+        existingQuiz.getQuestions().clear();
+
+        for (Question q : updatedQuiz.getQuestions()) {
+
+
+            if (q.getAnswers().stream().filter(Answer::isCorrect).count() != 1) {
+                throw new RuntimeException("Each question must have exactly one correct answer");
+            }
+            q.setId(null);
+            q.setQuiz(existingQuiz);
+
+            for (Answer a : q.getAnswers()) {
+                a.setId(null);
+                a.setQuestion(q);
+            }
+        }
+
+        existingQuiz.getQuestions().addAll(updatedQuiz.getQuestions());
+
+        return _quizRepository.save(existingQuiz);
     }
+
 
 
     @Override
@@ -54,7 +99,7 @@ public class QuizService implements IQuizService {
         _quizRepository.delete(quiz);
     }
 
-    private QuizResponse MapToQuizResponse(Quiz quiz){
+    public QuizResponse MapToQuizResponse(Quiz quiz){
       return new QuizResponse(
               quiz.getId(),
               quiz.getTitle(),
@@ -67,7 +112,7 @@ public class QuizService implements IQuizService {
                                       q.getOrderIndex(),
                                       q.getAnswers().stream().map(a ->
                                               new AnswerResponse(a.getId(),
-                                                      a.getOption_answer())
+                                                      a.getOption_answer(), a.isCorrect())
                                       ).toList()
                               )
 
