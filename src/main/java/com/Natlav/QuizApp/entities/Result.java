@@ -28,8 +28,14 @@ public class Result {
 
     private int totalScore;
 
+    @Column(name = "started_at")
     private LocalDateTime startedAt;
+
+    @Column(name = "completed_at")
     private LocalDateTime completedAt;
+
+    @Column(name = "time_taken_seconds")
+    private Integer timeTakenSeconds;
 }
 
 

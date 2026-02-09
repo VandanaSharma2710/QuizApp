@@ -13,11 +13,17 @@ public class SecurityUtil {
 
     private final UsersRepository usersRepository;
 
-    public User getCurrentUser(Authentication authentication) {
-        OAuth2User oauthUser = (OAuth2User) authentication.getPrincipal();
-        String email = oauthUser.getAttribute("email");
 
-        return usersRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found in DB"));
+    public User getCurrentUser(Authentication authentication) {
+        System.out.println("6 SecurityUtil");
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new RuntimeException("Unauthenticated");
+        }
+
+        if (authentication.getPrincipal() instanceof User user) {
+            return user;
+        }
+        throw new RuntimeException("Invalid Principal");
+
     }
 }

@@ -19,7 +19,8 @@ public class QuizAppApplication {
                 "DB_USERNAME", dotenv.get("DB_USERNAME"),
                 "DB_PASSWORD", dotenv.get("DB_PASSWORD"),
                 "GOOGLE_CLIENT_ID", dotenv.get("GOOGLE_CLIENT_ID"),
-                "GOOGLE_CLIENT_SECRET", dotenv.get("GOOGLE_CLIENT_SECRET")
+                "GOOGLE_CLIENT_SECRET", dotenv.get("GOOGLE_CLIENT_SECRET"),
+                "JWT_SECRET", dotenv.get("JWT_SECRET")
         ));
         app.run(args);
 

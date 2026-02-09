@@ -1,12 +1,15 @@
 package com.Natlav.QuizApp.Controllers;
 
 import com.Natlav.QuizApp.dto.QuizResponse;
+import com.Natlav.QuizApp.dto.ResultResponse;
+import com.Natlav.QuizApp.dto.SubmitQuiz;
 import com.Natlav.QuizApp.entities.User;
 import com.Natlav.QuizApp.security.SecurityUtil;
 import com.Natlav.QuizApp.services.Implement.QuizService;
 import com.Natlav.QuizApp.services.Implement.ResultService;
 import com.Natlav.QuizApp.entities.Quiz;
 import com.Natlav.QuizApp.entities.Result;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -18,6 +21,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/player")
+@PreAuthorize("hasRole('PLAYER')")
 @RequiredArgsConstructor
 public class PlayerController {
 
@@ -25,19 +29,10 @@ public class PlayerController {
     private final ResultService resultService;
     private final SecurityUtil securityUtil;
 
-    @GetMapping("/home")
-    public String home(Authentication authentication) {
-        OAuth2User oauthUser = (OAuth2User) authentication.getPrincipal();
-
-        String name = oauthUser.getAttribute("name");
-
-        return "Welcome " + name + " login successfully";
-
-    }
 
     @GetMapping("/quizzes")
-    public List<Quiz> getAllQuizzes(){
-        return quizService.getAllQuizzes();
+    public List<QuizResponse> getAllQuizzes(){
+        return quizService.getAllQuizzes().stream().map(quizService::MapToQuizResponse).toList();
     }
 
     @GetMapping("/quizzes/{quizId}")
@@ -46,10 +41,9 @@ public class PlayerController {
     }
 
     @PostMapping("/submit")
-    @PreAuthorize("hasRole('PLAYER')")
-    public Result submitQuiz( @RequestParam Long quizId, @RequestBody Map<Long, Long> answers, Authentication authentication){
+    public ResultResponse submitQuiz(@RequestParam Long quizId, @Valid @RequestBody SubmitQuiz submitQuiz, Authentication authentication){
         User user = securityUtil.getCurrentUser(authentication);
-       return resultService.submitQuiz(quizId, answers, user);
+       return resultService.submitQuiz(quizId, submitQuiz.getAnswers(), submitQuiz.getTimeTakenSeconds(), user);
     }
 
 

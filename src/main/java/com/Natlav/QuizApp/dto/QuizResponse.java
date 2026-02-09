@@ -11,5 +11,6 @@ public class QuizResponse {
     private Long id;
     private String title;
     private String description;
+    private Integer timeLimitSeconds;
     private List<QuestionResponse> questions;
 }

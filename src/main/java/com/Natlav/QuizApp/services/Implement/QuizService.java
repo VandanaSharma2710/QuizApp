@@ -5,6 +5,7 @@ import com.Natlav.QuizApp.dto.QuestionResponse;
 import com.Natlav.QuizApp.dto.QuizResponse;
 import com.Natlav.QuizApp.entities.Answer;
 import com.Natlav.QuizApp.entities.Question;
+import com.Natlav.QuizApp.repositories.ResultsRepository;
 import com.Natlav.QuizApp.services.IQuizService;
 import com.Natlav.QuizApp.entities.Quiz;
 import com.Natlav.QuizApp.entities.User;
@@ -21,7 +22,7 @@ import java.util.List;
 public class QuizService implements IQuizService {
 
     private final QuizzesRepository _quizRepository;
-
+    private final ResultsRepository _resultsRepository;
 
 
     @Override
@@ -93,9 +94,11 @@ public class QuizService implements IQuizService {
 
 
 
+    @Transactional
     @Override
     public void deleteQuiz(Long id) {
        Quiz quiz = _quizRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("Quiz doesn't exist"));
+        _resultsRepository.deleteByQuiz(quiz);
         _quizRepository.delete(quiz);
     }
 
@@ -104,6 +107,7 @@ public class QuizService implements IQuizService {
               quiz.getId(),
               quiz.getTitle(),
               quiz.getDescription(),
+              quiz.getTimeLimitSeconds(),
               quiz.getQuestions().stream().map(q ->
                               new QuestionResponse(
                                       q.getId(),
